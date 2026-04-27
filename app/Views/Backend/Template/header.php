@@ -1,24 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lumino - Tables</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lumino - Admin</title>
 
-<link href="/Assets/css/bootstrap.min.css" rel="stylesheet">
-<link href="/Assets/css/datepicker3.css" rel="stylesheet">
-<link href="/Assets/css/bootstrap-table.css" rel="stylesheet">
-<link href="/Assets/css/styles.css" rel="stylesheet">
-<link href="/Assets/css/sweetalert2.min.css" rel="stylesheet">
-<!--[if lt IE 9]>
-<script src="js/html5shiv.js"></script>
-<script src="js/respond.min.js"></script>
-<![endif]-->
+    <link href="<?= base_url('Assets/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('Assets/css/datepicker3.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('Assets/css/bootstrap-table.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('Assets/css/styles.css'); ?>" rel="stylesheet">
+    <link href="<?= base_url('Assets/css/sweetalert2.min.css'); ?>" rel="stylesheet">
 
-</head>
-
+    </head>
 <body>
-	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        </nav>
 		<div class="container-fluid">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse">
