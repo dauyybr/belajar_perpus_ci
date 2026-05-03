@@ -11,18 +11,24 @@ class Admin extends BaseController
         return view('Backend/Login/login');
     }
 
-    public function dashboard()
+   public function dashboard()
     {
-        // PERBAIKAN: Menyamakan key session dengan yang dibuat saat login
-        // Di sini kita mengecek apakah session 'logged_in' bernilai true
-        if (session()->get('logged_in') != TRUE) {
+        // Pengecekan gembok session
+        if (session()->get('ses_id') == "") {
             session()->setFlashdata('error', 'Silakan login terlebih dahulu!');
             return redirect()->to(base_url('admin/login-admin'));
         } else {
-            echo view('Backend/Template/header');
-            echo view('Backend/Template/sidebar');
-            echo view('Backend/Login/dashboard_admin');
-            echo view('Backend/Template/footer');
+            // Minta CodeIgniter untuk ngambil segmen URL
+            $uri = service('uri');
+            $pages = $uri->getSegment(2); 
+            
+            $data['pages'] = $pages;
+
+            // URUTAN INI SANGAT PENTING! Jangan sampai terbalik atau tertinggal
+            echo view('Backend/Template/header', $data);
+            echo view('Backend/Template/sidebar', $data);
+            echo view('Backend/Login/dashboard_admin', $data);
+            echo view('Backend/Template/footer', $data);
         }
     }
 
@@ -47,11 +53,12 @@ class Admin extends BaseController
                 session()->setFlashdata('error', 'Password Tidak Sesuai!');
                 return redirect()->back();
             } else {
-                // PERBAIKAN: Menyimpan data session dengan key yang konsisten
+                // PERBAIKAN: Menyamakan key session dengan yang diminta oleh halaman lain
                 $sessionData = [
-                    'id_admin'       => $dataUser['id_admin'],
-                    'username_admin' => $dataUser['username_admin'],
-                    'logged_in'      => TRUE // Key ini yang akan dicek di dashboard
+                    'ses_id'    => $dataUser['id_admin'],
+                    'ses_user'  => $dataUser['username_admin'],
+                    'ses_level' => $dataUser['akses_level'], // Mengambil data level dari database
+                    'logged_in' => TRUE 
                 ];
                 session()->set($sessionData);
 
@@ -170,4 +177,73 @@ class Admin extends BaseController
         echo view('Backend/Template/footer', $data);
     }
     }
+
+    public function edit_data_admin($id)
+    {
+        if (session()->get('ses_id') == "") {
+            session()->setFlashdata('error', 'Silakan login terlebih dahulu!');
+            return redirect()->to(base_url('admin/login-admin'));
+        } else {
+            $modelAdmin = new M_Admin;
+            // Kita cari data menggunakan sha1 karena di link view-nya kamu pakai sha1()
+            $dataUser = $modelAdmin->getDataAdmin(['sha1(id_admin)' => $id])->getRowArray();
+
+            $uri = service('uri');
+            $pages = $uri->getSegment(2);
+
+            $data['pages'] = $pages;
+            $data['data_user'] = $dataUser;
+
+            echo view('Backend/Template/header', $data);
+            echo view('Backend/Template/sidebar', $data);
+            echo view('Backend/MasterAdmin/edit-admin', $data);
+            echo view('Backend/Template/footer', $data);
+        }
+    }
+
+    public function update_data_admin()
+    {
+        if (session()->get('ses_id') == "") {
+            session()->setFlashdata('error', 'Silakan login terlebih dahulu!');
+            return redirect()->to(base_url('admin/login-admin'));
+        } else {
+            $modelAdmin = new M_Admin;
+            $id = $this->request->getPost('id_admin');
+            
+            $dataUpdate = [
+                'nama_admin'      => $this->request->getPost('nama'),
+                'username_admin'  => $this->request->getPost('username'),
+                'akses_level'     => $this->request->getPost('level'),
+                'updated_at'      => date('Y-m-d H:i:s')
+            ];
+
+            $modelAdmin->updateDataAdmin($dataUpdate, ['id_admin' => $id]);
+            session()->setFlashdata('success', 'Data Admin Berhasil Diperbarui!!');
+            return redirect()->to(base_url('admin/master-data-admin'));
+        }
+    }
+
+    public function hapus_data_admin($id)
+    {
+        if (session()->get('ses_id') == "") {
+            session()->setFlashdata('error', 'Silakan login terlebih dahulu!');
+            return redirect()->to(base_url('admin/login-admin'));
+        } else {
+            $modelAdmin = new \App\Models\M_Admin();
+            
+            // Siapkan data untuk mengubah status menjadi terhapus (Soft Delete)
+            $dataUpdate = [
+                'is_delete_admin' => '1',
+                'updated_at'      => date('Y-m-d H:i:s')
+            ];
+
+            // Panggil fungsi update dari model
+            // Perhatikan urutan parameternya: ($data, $where)
+            $modelAdmin->updateDataAdmin($dataUpdate, ['sha1(id_admin)' => $id]);
+
+            session()->setFlashdata('success', 'Data Admin Berhasil Dihapus!!');
+            return redirect()->to(base_url('admin/master-data-admin'));
+        }
+    }   
+    
 }
