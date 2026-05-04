@@ -3,53 +3,33 @@
 namespace App\Models;
 use CodeIgniter\Model;
 
-class M_Buku extends Model
+class M_Kategori extends Model
 {
-    protected $table = 'tbl_buku';
+    protected $table = 'tbl_kategori';
 
-    public function getDataBuku($where = false)
+    public function getDataKategori($where = false)
     {
         if ($where === false) {
             $builder = $this->db->table($this->table);
             $builder->select('*');
-            $builder->orderBy('judul_buku', 'ASC');
+            $builder->orderBy('nama_kategori', 'ASC');
             return $builder->get();
         } else {
             $builder = $this->db->table($this->table);
             $builder->select('*');
             $builder->where($where);
-            $builder->orderBy('judul_buku', 'ASC');
+            $builder->orderBy('nama_kategori', 'ASC');
             return $builder->get();
         }
     }
 
-    public function getDataBukuJoin($where = false)
-    {
-        if ($where === false) {
-            $builder = $this->db->table($this->table);
-            $builder->select('*');
-            $builder->join('tbl_kategori', 'tbl_kategori.id_kategori = tbl_buku.id_kategori', 'LEFT');
-            $builder->join('tbl_rak', 'tbl_rak.id_rak = tbl_buku.id_rak', 'LEFT');
-            $builder->orderBy('tbl_buku.judul_buku', 'ASC');
-            return $builder->get();
-        } else {
-            $builder = $this->db->table($this->table);
-            $builder->select('*');
-            $builder->where($where);
-            $builder->join('tbl_kategori', 'tbl_kategori.id_kategori = tbl_buku.id_kategori', 'LEFT');
-            $builder->join('tbl_rak', 'tbl_rak.id_rak = tbl_buku.id_rak', 'LEFT');
-            $builder->orderBy('tbl_buku.judul_buku', 'ASC');
-            return $builder->get();
-        }
-    }
-
-    public function saveDataBuku($data)
+    public function saveDataKategori($data)
     {
         $builder = $this->db->table($this->table);
         return $builder->insert($data);
     }
 
-    public function updateDataBuku($data, $where)
+    public function updateDataKategori($data, $where)
     {
         $builder = $this->db->table($this->table);
         $builder->where($where);
@@ -59,8 +39,7 @@ class M_Buku extends Model
     public function autoNumber()
     {
         $builder = $this->db->table($this->table);
-        $builder->select("id_buku");
-        $builder->orderBy("id_buku", "DESC");
+        $builder->orderBy("id_kategori", "DESC");
         $builder->limit(1);
         return $builder->get();
     }
